@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_2/control_page.dart';
@@ -36,14 +37,17 @@ class _ScanPageState extends State<ScanPage> {
   void initState() {
     Timer.periodic(const Duration(milliseconds: 2000),
         Platform.isAndroid ? androidGetBlueLack : iosGetBlueState);
-    FlutterBlueElves.instance.startScan(5000).listen((event) {
-      print(event.id + " " + event.uuids.toString());
-      setState(() {
-        if (event.uuids.contains('6e400001-b5a3-f393-e0a9-e50e24dcca9e')) {
-          _scanResultList.add(event);
-        }
+
+    if ((Platform.isAndroid && _blueLack.isEmpty)) {
+      FlutterBlueElves.instance.startScan(5000).listen((event) {
+        print(event.id + " " + event.uuids.toString());
+        setState(() {
+          if (event.uuids.contains('6e400001-b5a3-f393-e0a9-e50e24dcca9e')) {
+            _scanResultList.add(event);
+          }
+        });
       });
-    });
+    }
     super.initState();
   }
 
@@ -53,15 +57,17 @@ class _ScanPageState extends State<ScanPage> {
       home: Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            FlutterBlueElves.instance.startScan(30000).listen((event) {
-              print(event.id + " " + event.uuids.toString());
-              setState(() {
-                if (event.uuids
-                    .contains('6e400001-b5a3-f393-e0a9-e50e24dcca9e')) {
-                  _scanResultList.add(event);
-                }
+            if ((Platform.isAndroid && _blueLack.isEmpty)) {
+              FlutterBlueElves.instance.startScan(30000).listen((event) {
+                print(event.id + " " + event.uuids.toString());
+                setState(() {
+                  if (event.uuids
+                      .contains('6e400001-b5a3-f393-e0a9-e50e24dcca9e')) {
+                    _scanResultList.add(event);
+                  }
+                });
               });
-            });
+            }
           },
           child: const Text('scan'),
         ),
